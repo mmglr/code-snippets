@@ -1,0 +1,63 @@
+//// References
+
+- https://docs.oracle.com/javase/8/docs/api/java/util/zip/Deflater.html
+
+
+//// Example 1
+
+public static byte[] decompress(byte[] value) throws DataFormatException {
+  ByteArrayOutputStream bos = new ByteArrayOutputStream(value.length);
+  Inflater decompressor = new Inflater();
+  try {
+    decompressor.setInput(value);
+    final byte[] buf = new byte[1024];
+    while (!decompressor.finished()) {
+      int count = decompressor.inflate(buf);
+      bos.write(buf, 0, count);
+    }
+  } finally {
+    decompressor.end();
+  }
+  return bos.toByteArray();
+}
+
+
+//// Example 2
+
+private int doRead(byte[] buf, int offset, int len) throws DataFormatException, IOException {
+ int read = 0;
+ int n = 0;
+ byte[] inputBuffer = new byte[len];
+ while (len > 0) {
+   n = inflater.inflate(buf, offset, len);
+   if (n == 0) {
+    if (inflater.finished()) {
+      break;
+    } else if (inflater.needsInput()) {
+      //feeding
+      int m = input.read(inputBuffer);
+      if (m == -1) {
+       //it shouldn't be here, throw exception
+       throw new DataFormatException("Input is over while inflater still expecting data");
+      } else {
+       //feed the data in
+       inflater.setInput(inputBuffer, 0, m);
+       n = inflater.inflate(buf, offset, len);
+       if (n > 0) {
+         read += n;
+         offset += n;
+         len -= n;
+       }
+      }
+    } else {
+      //it shouldn't be here, throw
+      throw new DataFormatException("Inflater is neither finished nor needing input.");
+    }
+   } else {
+    read += n;
+    offset += n;
+    len -= n;
+   }
+ }
+ return read;
+}
