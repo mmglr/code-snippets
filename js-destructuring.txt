@@ -1,0 +1,101 @@
+function personFactory(firstName, lastName, dob: Date, favoriteFoods: string[]) {
+	return {
+		first: firstName,
+		last: lastName,
+		mostFavoriteFood: favoriteFoods[0],
+		secondFavoriteFood: favoriteFoods[1],
+		yearOfBirth: dob.year
+	};
+}
+
+Summary : let {prop : varName = default, ...rest} = object
+
+Destructuring, renaming and grouping of objects:
+
+function personFactory(first, last, {  year: yearOfBirth, ...dayAndYear }, [mostFavoriteFood, secondFavoriteFood, ...otherFavorites]) {
+	return {
+		first,
+		last,
+		yearOfBirth,
+		mostFavoriteFood,
+		secondFavoriteFood
+	};
+}
+
+Note: When renaming a value in an object it is the identifier as it exsits in the object followed by a colon followed by the new identifier.
+
+personFactory('John', 'Doe', { month: 1, day: 1, year: 1970 }, ['Pizza', 'Hot Dogs'])
+<EXAMPLE>
+
+The result if we are missing the year and/or favorite foods:
+
+personFactory('John', 'Doe', { month: 1, day: 1 }, [])
+<EXAMPLE>
+
+This can be further compressed with arrow functions:
+
+personFactory = (first, last, { year: yearOfBirth }, [mostFavoriteFood, secondFavoriteFood]) =>
+	({first, last, yearOfBirth, mostFavoriteFood, secondFavoriteFood});
+<EXAMPLE>
+
+We can also add defaults (like typescript).
+personFactory = (first, last, { year: yearOfBirth } = { year: 'not set' }, [mostFavoriteFood, secondFavoriteFood] = ['not set', 'not set']) =>
+	({first, last, yearOfBirth, mostFavoriteFood, secondFavoriteFood});
+
+We can also destructure nested objects.
+
+Consider:
+
+const userProfile = {
+	social: {
+		twitter: {
+			handle: '@xyz123'
+		},
+		linkedIn: {
+			handle: 'x_y_z'
+		}
+	}
+}
+
+getTwitterProfile = ({ social: { twitter: { handle } } }) => `https://twitter.com/${handle}`;
+
+We can add = { social: { twitter: { handle: '@default_account' } } }.
+
+or
+
+... = ({ social: { twitter: { handle = 'default_handle' } = {} } = {} } = {})
+
+Nested arrays can be destructured like so:
+
+const nestedArray = [ 0, 1, [2, 4, [8, 5, { luckyNumber: 777 }, 13], 45, 10 ], 17 ]
+
+getLuckyNumber = ([,, [,, [,, { luckyNumber } ] ] ]) => luckyNumber
+777
+
+Get the first item:
+
+const winners = [
+  { name: 'Mario',   time: 110 },
+  { name: 'Waluigi', time: 115 },
+  { name: 'Toad',    time: 116 },
+  { name: 'Yoshi',   time: 124 },
+  { name: 'Bowser',  time: 129 },
+];
+
+bestTime = ([{time}]) => time
+
+topThreeTimes = ([{time: first}, {time: second}, {time: third}]) => [first, second, third]
+
+Swapping values:
+
+let a = 14.7
+let b = 12.5
+
+[a, b] = [b, a]
+Array [ 12.5, 14.7 ]
+
+a
+12.5
+
+b
+14.7
